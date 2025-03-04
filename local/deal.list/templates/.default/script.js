@@ -9,7 +9,7 @@ BX.Vue3.createApp({
     mounted() {
         BX.ajax.runAction('/local/components/local/deal.list/api/dealapi.php?action=getDeals')
             .then(response => {
-                this.deals = response.data;
+                this.deals = response.deals;
                 this.loading = false;
             })
             .catch(() => {
