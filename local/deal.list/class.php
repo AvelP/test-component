@@ -5,10 +5,12 @@ use Bitrix\Main\Loader;
 use Bitrix\Main\Engine\Controllerable;
 use Bitrix\Main\Engine\ActionFilter;
 use Bitrix\Crm\DealTable;
+use Bitrix\Main\Error;
+use Bitrix\Main\ErrorCollection;
 
 if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) die();
 
-class DealListComponent extends \CBitrixComponent implements Controllerable
+class DealListComponent extends \CBitrixComponent implements \Bitrix\Main\Engine\Contract\Controllerable, \Bitrix\Main\Errorable
 {
     public function configureActions()
     {
