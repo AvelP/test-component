@@ -13,4 +13,6 @@
     });
 </script>
 
-<script src="<?= $templateFolder ?>/script.js"></script>
+<?php
+$this->addExternalJs($templateFolder . "/script.js");
+?>
