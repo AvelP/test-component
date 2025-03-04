@@ -1,23 +1,38 @@
 <?php
-use \Bitrix\Main\Loader;
-use \Bitrix\Main\Application;
-use \Bitrix\Crm\DealTable;
 
-require $_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_before.php";
+use Bitrix\Main\Loader;
+use Bitrix\Main\Application;
+use Bitrix\Main\Context;
+use Bitrix\Main\Web\Json;
+use Bitrix\Main\LoaderException;
 
-if (!Loader::includeModule("crm")) {
-    echo json_encode(["error" => "Модуль CRM не установлен"]);
-    die();
-}
+require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_before.php");
 
-$request = Application::getInstance()->getContext()->getRequest();
+$request = Context::getCurrent()->getRequest();
 $action = $request->getQuery("action");
 
-if ($action === "getDeals") {
-    $deals = DealTable::getList([
-        "select" => ["ID", "TITLE"],
-        "order" => ["TITLE" => "ASC"]
-    ])->fetchAll();
+if ($action === 'getDeals') {
+    try {
+        if (!Loader::includeModule('crm')) {
+            throw new LoaderException('Модуль CRM не установлен');
+        }
 
-    echo json_encode($deals);
+        $deals = [];
+        $res = \CCrmDeal::GetList([], [], ["ID", "TITLE"], false);
+        while ($deal = $res->Fetch()) {
+            $deals[] = $deal;
+        }
+
+        $response = ['deals' => $deals];
+
+    } catch (\Exception $e) {
+        $response = ['error' => $e->getMessage()];
+    }
+} else {
+    $response = ['error' => 'Invalid action'];
 }
+
+header('Content-Type: application/json');
+echo Json::encode($response);
+
+require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/epilog_after.php");
