@@ -38,6 +38,12 @@ echo json_encode([
     "data" => [
         "deals" => $deals,
         "totalCount" => $totalCount
+    ],
+    "getparam" => [
+        "select" => ["ID", "TITLE"],
+        "order" => [$sortKey => $sortOrder],
+        "limit" => $itemsPerPage,
+        "offset" => ($currentPage - 1) * $itemsPerPage
     ]
 ]);
 die();
