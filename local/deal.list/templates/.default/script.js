@@ -8,7 +8,7 @@ BX.Vue3.createApp({
     },
     mounted() {
         BX.ajax({
-            url: '/local/components/local/deal.list/ajax.php',
+            url: '/local/components/local/deal.list/ajax.php?action=getDeals',
             data: { action: 'getDeals' },
             method: 'GET',
             dataType: 'json',
