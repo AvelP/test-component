@@ -1,5 +1,3 @@
-import { BitrixVue } from "ui.vue3";
-
 BX.Vue3.createApp({
     data() {
         return {
