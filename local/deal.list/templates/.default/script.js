@@ -7,15 +7,19 @@ BX.Vue3.createApp({
         };
     },
     mounted() {
-        BX.ajax.runAction('local:deal.list.getDeals') // Вызываем getDeals из class.php
-            .then(response => {
-                this.deals = response.data.data;
-                this.loading = false;
-            })
-            .catch(() => {
-                this.error = "Ошибка загрузки данных!";
-                this.loading = false;
-            });
+        BX.ajax({
+            url: '/local/components/local/deal.list/ajax.php',
+            data: { action: 'getDeals' },
+            method: 'GET',
+            dataType: 'json',
+            onsuccess: function(response) {
+                console.log(response);
+                this.deals = response.data;
+            },
+            onfailure: function(error) {
+                console.error("Ошибка загрузки данных!", error);
+            }
+        });
     },
     template: `
         <div>
