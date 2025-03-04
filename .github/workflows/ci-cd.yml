@@ -7,19 +7,16 @@ on:
 
 jobs:
   deploy:
-    runs-on: self-hosted  # Запускаем на сервере
+    runs-on: self-hosted  # Используем локальный runner
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
 
       - name: Deploy to Server via SSH
-        uses: appleboy/ssh-action@v0.1.6
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USER }}
-          key: ${{ secrets.SSH_KEY }}
-          script: |
+        run: |
+          ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
             cd /home/bitrix/www/local/components
             git pull origin main
-            chown -R bitrix:bitrix /home/bitrix/www/local/components
+            chown -R www-data:www-data /home/bitrix/www/local/components
+          EOF
