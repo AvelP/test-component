@@ -1,10 +1,16 @@
 <?php if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) die(); ?>
 
-<div class="my-component">
-    <h2>Список сделок</h2>
-    <ul>
-        <?php foreach ($arResult['DEALS'] as $deal): ?>
-            <li><?= htmlspecialchars($deal['TITLE']) ?> (ID: <?= $deal['ID'] ?>)</li>
-        <?php endforeach; ?>
-    </ul>
-</div>
+<div id="deal-list"></div>
+
+<script>
+    BX.ready(function() {
+        BX.Vue3.init({
+            el: '#deal-list',
+            components: {
+                DealList: 'local.deal.list'
+            }
+        });
+    });
+</script>
+
+<script src="<?= $templateFolder ?>/script.js"></script>

@@ -4,34 +4,29 @@ namespace Local\Components;
 if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) die();
 
 use Bitrix\Main\Loader;
-use Bitrix\Main\Application;
+use Bitrix\Main\Engine\Controller;
 use Bitrix\Crm\DealTable;
-use CBitrixComponent;
-
-class DealsListComponent extends CBitrixComponent
+class DealListController extends Controller
 {
-    public function executeComponent()
+    public function configureActions()
     {
-        if (!Loader::includeModule("crm")) {
-            ShowError("CRM module is not installed");
-            return;
-        }
-
-        $this->arResult['DEALS'] = $this->getDeals();
-        $this->includeComponentTemplate();
+        return [
+            'getDeals' => [
+                'prefilters' => []
+            ]
+        ];
     }
 
-    private function getDeals()
+    public function getDealsAction()
     {
-        $deals = [];
-        $result = DealTable::getList([
-            'select' => ['ID', 'TITLE', 'STAGE_ID', 'OPPORTUNITY'],
-            'order' => ['TITLE' => 'ASC']
-        ]);
+        Loader::includeModule("crm");
 
-        while ($deal = $result->fetch()) {
-            $deals[] = $deal;
-        }
+        $deals = DealTable::getList([
+            "select" => ["ID", "TITLE"],
+            "order" => ["TITLE" => "ASC"]
+        ])->fetchAll();
+
         return $deals;
     }
 }
+?>
