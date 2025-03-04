@@ -2,7 +2,7 @@
 namespace Local\Components;
 
 use Bitrix\Main\Loader;
-use Bitrix\Main\Engine\Controllerable;
+use Bitrix\Main\Engine\Contract\Controllerable;
 use Bitrix\Main\Engine\ActionFilter;
 use Bitrix\Crm\DealTable;
 use Bitrix\Main\Error;
@@ -10,8 +10,17 @@ use Bitrix\Main\ErrorCollection;
 
 if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) die();
 
-class DealListComponent extends \CBitrixComponent implements \Bitrix\Main\Engine\Contract\Controllerable, \Bitrix\Main\Errorable
+class DealListComponent extends \CBitrixComponent implements Controllerable, \Bitrix\Main\Errorable
 {
+    /** @var ErrorCollection */
+    protected $errorCollection;
+
+    public function __construct($component = null)
+    {
+        parent::__construct($component);
+        $this->errorCollection = new ErrorCollection();
+    }
+
     public function configureActions()
     {
         return [
@@ -27,7 +36,8 @@ class DealListComponent extends \CBitrixComponent implements \Bitrix\Main\Engine
     public function getDealsAction()
     {
         if (!Loader::includeModule("crm")) {
-            return ["status" => "error", "message" => "Модуль CRM не найден"];
+            $this->errorCollection[] = new Error("Модуль CRM не найден");
+            return null;
         }
 
         $deals = [];
@@ -42,6 +52,16 @@ class DealListComponent extends \CBitrixComponent implements \Bitrix\Main\Engine
         }
 
         return ["status" => "success", "data" => $deals];
+    }
+
+    public function getErrors()
+    {
+        return $this->errorCollection->toArray();
+    }
+
+    public function getErrorByCode($code)
+    {
+        return $this->errorCollection->getErrorByCode($code);
     }
 
     public function executeComponent()
