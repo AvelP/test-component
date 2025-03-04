@@ -17,4 +17,3 @@ jobs:
         run: |
             cd /home/bitrix/www/local/components
             git pull origin main
-            chown -R www-data:www-data /home/bitrix/www/local/components
