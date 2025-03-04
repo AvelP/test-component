@@ -1,31 +1,43 @@
 <?php
 use Bitrix\Main\Loader;
-use Bitrix\Main\Application;
 use Bitrix\Crm\DealTable;
+use Bitrix\Main\Application;
 
 require $_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_before.php";
+
+$request = Application::getInstance()->getContext()->getRequest();
+$sortKey = $request->get("sortKey") ?: "TITLE";
+$sortOrder = strtoupper($request->get("sortOrder")) === "DESC" ? "DESC" : "ASC";
+$currentPage = max(1, (int) $request->get("currentPage"));
+$itemsPerPage = max(1, (int) $request->get("itemsPerPage"));
 
 if (!Loader::includeModule("crm")) {
     echo json_encode(["status" => "error", "message" => "Модуль CRM не найден"]);
     die();
 }
 
-$request = Application::getInstance()->getContext()->getRequest();
-$action = $request->getQuery("action");
+// Подсчет количества сделок
+$totalCount = DealTable::getCount();
 
-if ($action === "getDeals") {
-    $deals = [];
-    $result = DealTable::getList([
-        "select" => ["ID", "TITLE"],
-        "order" => ["TITLE" => "ASC"],
-        "limit" => 10
-    ]);
+// Получение сделок с учетом пагинации
+$deals = [];
+$result = DealTable::getList([
+    "select" => ["ID", "TITLE"],
+    "order" => [$sortKey => $sortOrder],
+    "limit" => $itemsPerPage,
+    "offset" => ($currentPage - 1) * $itemsPerPage
+]);
 
-    while ($deal = $result->fetch()) {
-        $deals[] = $deal;
-    }
-
-    echo json_encode(["status" => "success", "data" => $deals]);
+while ($deal = $result->fetch()) {
+    $deals[] = $deal;
 }
 
-require $_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/epilog_after.php";
+// Отправляем JSON-ответ
+echo json_encode([
+    "status" => "success",
+    "data" => [
+        "deals" => $deals,
+        "totalCount" => $totalCount
+    ]
+]);
+die();
