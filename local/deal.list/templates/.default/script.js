@@ -8,17 +8,23 @@ BX.Vue3.createApp({
     },
     mounted() {
         BX.ajax({
-            url: '/local/components/local/deal.list/ajax.php?action=getDeals',
-            data: { action: 'getDeals' },
-            method: 'GET',
-            dataType: 'json',
-            onsuccess: function(response) {
+            url: "/local/components/local/deal.list/ajax.php?action=getDeals",
+            method: "GET",
+            dataType: "json",
+            onsuccess: (response) => { // Используем стрелочную функцию
                 console.log(response);
-                this.deals = response.data;
+                if (response.status === "success") {
+                    this.deals = response.data;
+                } else {
+                    this.error = "Ошибка загрузки данных!";
+                }
+                this.loading = false;
             },
-            onfailure: function(error) {
+            onfailure: (error) => {
                 console.error("Ошибка загрузки данных!", error);
-            }
+                this.error = "Ошибка загрузки данных!";
+                this.loading = false;
+            },
         });
     },
     template: `
