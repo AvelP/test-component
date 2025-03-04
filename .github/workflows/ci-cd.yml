@@ -15,8 +15,6 @@ jobs:
 
       - name: Deploy to Server via SSH
         run: |
-          ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
             cd /home/bitrix/www/local/components
             git pull origin main
             chown -R www-data:www-data /home/bitrix/www/local/components
-          EOF
