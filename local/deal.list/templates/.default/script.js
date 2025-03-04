@@ -1,4 +1,6 @@
-BX.Vue3.component('local.deal.list', {
+import { BitrixVue } from "ui.vue3";
+
+BX.Vue3.createApp({
     data() {
         return {
             deals: [],
@@ -7,7 +9,7 @@ BX.Vue3.component('local.deal.list', {
         };
     },
     mounted() {
-        BX.ajax.runAction('local.deal.list.getDeals')
+        BX.ajax.runAction('/local/api/dealapi.php?action=getDeals')
             .then(response => {
                 this.deals = response.data;
                 this.loading = false;
@@ -37,4 +39,4 @@ BX.Vue3.component('local.deal.list', {
             this.deals.sort((a, b) => a.TITLE.localeCompare(b.TITLE));
         }
     }
-});
+}).mount("#app");

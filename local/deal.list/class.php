@@ -1,32 +1,21 @@
 <?php
 namespace Local\Components;
 
+use \Bitrix\Main\Loader;
+use \Bitrix\Main\Engine\ComponentController;
+
 if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) die();
 
-use Bitrix\Main\Loader;
-use Bitrix\Main\Engine\Controller;
-use Bitrix\Crm\DealTable;
-class DealListController extends Controller
+class DealList extends \CBitrixComponent
 {
-    public function configureActions()
+    public function executeComponent()
     {
-        return [
-            'getDeals' => [
-                'prefilters' => []
-            ]
-        ];
-    }
+        if (!Loader::includeModule("crm")) {
+            ShowError("Модуль CRM не установлен!");
+            return;
+        }
 
-    public function getDealsAction()
-    {
-        Loader::includeModule("crm");
-
-        $deals = DealTable::getList([
-            "select" => ["ID", "TITLE"],
-            "order" => ["TITLE" => "ASC"]
-        ])->fetchAll();
-
-        return $deals;
+        $this->includeComponentTemplate();
     }
 }
-?>
+
