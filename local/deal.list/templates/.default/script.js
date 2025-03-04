@@ -1,4 +1,4 @@
-BX.Vue3.createApp({
+BX.Vue3.component('local.deal.list', {
     data() {
         return {
             deals: [],
@@ -7,12 +7,18 @@ BX.Vue3.createApp({
         };
     },
     mounted() {
-        BX.ajax.runAction('/local/api/dealapi.php?action=getDeals')
+        BX.ajax.runAction('local.deal.list.getDeals')
             .then(response => {
-                this.deals = response.data;
-                this.loading = false;
+                console.log("Ответ API:", response);
+                if (response.status === "success") {
+                    this.deals = response.data.deals;  // Исправлено на response.data.deals
+                    this.loading = false;
+                } else {
+                    throw new Error("Ошибка данных API");
+                }
             })
-            .catch(() => {
+            .catch((err) => {
+                console.error("Ошибка запроса:", err);
                 this.error = "Ошибка загрузки данных!";
                 this.loading = false;
             });
@@ -37,4 +43,4 @@ BX.Vue3.createApp({
             this.deals.sort((a, b) => a.TITLE.localeCompare(b.TITLE));
         }
     }
-}).mount("#app");
+});
