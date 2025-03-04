@@ -1,4 +1,4 @@
-BX.Vue3.component('local.deal.list', {
+BX.Vue3.createApp({
     data() {
         return {
             deals: [],
@@ -7,40 +7,40 @@ BX.Vue3.component('local.deal.list', {
         };
     },
     mounted() {
-        BX.ajax.runAction('local.deal.list.getDeals')
+        BX.ajax.runAction('local:dealapi.getDeals')
             .then(response => {
                 console.log("Ответ API:", response);
-                if (response.status === "success") {
-                    this.deals = response.data.deals;  // Исправлено на response.data.deals
-                    this.loading = false;
+                if (response.data && response.data.deals) {
+                    this.deals = response.data.deals;
                 } else {
-                    throw new Error("Ошибка данных API");
+                    throw new Error("Пустой ответ от API");
                 }
+                this.loading = false;
             })
-            .catch((err) => {
+            .catch(err => {
                 console.error("Ошибка запроса:", err);
                 this.error = "Ошибка загрузки данных!";
                 this.loading = false;
             });
     },
     template: `
-        <div>
-            <h2>Список сделок</h2>
-            <div v-if="loading">Загрузка...</div>
-            <div v-if="error">{{ error }}</div>
-            <table v-if="!loading && !error">
-                <tr>
-                    <th @click="sortDeals">Название ▲</th>
-                </tr>
-                <tr v-for="deal in deals" :key="deal.ID">
-                    <td>{{ deal.TITLE }}</td>
-                </tr>
-            </table>
-        </div>
-    `,
+            <div>
+                <h2>Список сделок</h2>
+                <div v-if="loading">Загрузка...</div>
+                <div v-if="error">{{ error }}</div>
+                <table v-if="!loading && !error">
+                    <tr>
+                        <th @click="sortDeals">Название ▲</th>
+                    </tr>
+                    <tr v-for="deal in deals" :key="deal.ID">
+                        <td>{{ deal.TITLE }}</td>
+                    </tr>
+                </table>
+            </div>
+        `,
     methods: {
         sortDeals() {
             this.deals.sort((a, b) => a.TITLE.localeCompare(b.TITLE));
         }
     }
-});
+}).mount("#app");
