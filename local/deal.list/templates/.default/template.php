@@ -2,4 +2,3 @@
 
 <div id="app"></div>
 <script src="<?= $templateFolder ?>/script.js"></script>
-<link rel="stylesheet" href="<?= $templateFolder ?>/style.css">
